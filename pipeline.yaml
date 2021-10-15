@@ -1,0 +1,14 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: python-pipeline-ref
+spec:
+  workspaces:
+    - name: pipeline-ws
+  tasks:
+  - name: python-task
+    taskRef:
+      name: python-task-ref
+    workspaces:
+      - name: task-ws
+        workspace: pipeline-ws
