@@ -1,0 +1,30 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: python-task-ref
+spec:
+  volumes:
+    - name: report-volume
+      emptyDir: {}
+  workspaces:
+    - name: task-ws
+      description: Workspace to store your django result
+  steps:
+    - name: python-image
+      image: python:alpine3.14
+      command: ["/bin/sh"]
+      args:
+        - -c
+        - | 
+            apk add git
+            git clone https://github.com/prav10194/django-json
+            cd ./django-json
+            python3 parsertest.py -i nginx-scan.json -o outputjson.json
+            cat ./outputjson.json > $(workspaces.task-ws.path)/outputjson.json
+    - name: upload-image
+      image: python:alpine3.14
+      command: ["/bin/sh"]
+      args:
+        - -c
+        - | 
+            cat .$(workspaces.task-ws.path)/outputjson.json
